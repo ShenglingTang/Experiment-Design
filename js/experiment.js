@@ -219,7 +219,7 @@ var displayShapes = function() {
     if(randomNumber1 > 0.5) {
       targetAddition = "Black"; //target with black addition
     } else {
-      targetAddition = null;
+      targetAddition = null; //target without addition
     }
     if(randomNumber2 > 0.5) {
       targetColor = "DarkGray"; // target is dark gray
@@ -252,9 +252,9 @@ var displayShapes = function() {
       targetAddition = null;
     }
     if(randomNumber2 > 0.5) {
-      targetColor = "DarkGray"; // target is dark gray
+      targetColor = "DarkGray";
     } else {
-      targetColor = "LightGray"; // target is light gray
+      targetColor = "LightGray";
     }
 
     //set the visual appearance of other objects
@@ -271,8 +271,9 @@ var displayShapes = function() {
         });
       }
     }
-  } else if (visualVariable == "ColorAddition") {
-    //Decide on the visual appearance of the target, VV = Color
+  } 
+  else if (visualVariable == "ColorAddition") {
+    //Decide on the visual appearance of the target, VV = ColorAddition
     var randomNumber1 = Math.random();
     var randomNumber2 = Math.random();
     if(randomNumber1 > 0.5) {
@@ -284,6 +285,7 @@ var displayShapes = function() {
       targetColor = "DarkGray"; 
     } else {
       targetColor = "LightGray";
+    }
 
     //set the visual appearance of other objects
     for (var i = 0; i < objectCount-1; i++) {
@@ -299,7 +301,6 @@ var displayShapes = function() {
         });
       }
     }
-
   }
 
   // 3. Shuffle the list of objects (useful when there are variations regarding both visual variable) and add the target at a specific index
