@@ -143,6 +143,7 @@ var displayInstructions = function() {
 
 }
 
+var previousObjectsAppearance = [];
 var displayShapes = function() {
   ctx.state = state.SHAPES;
 
@@ -317,6 +318,7 @@ var displayShapes = function() {
   // and insert it at this specific index
   objectsAppearance.splice(ctx.targetIndex, 0, {color:targetColor, addition: targetAddition});
 
+  previousObjectsAppearance = objectsAppearance; //store the objectAppearance to a global variable so that it can be used when restarting the same trial
   // 4. We create actual SVG shapes and lay them out as a grid
   // compute coordinates for laying out objects as a grid
   var gridCoords = gridCoordinates(objectCount, 60);
@@ -378,6 +380,7 @@ var displayPlaceholders = function() {
           } else {
             //errorCount++, restartTrial
             ErrorCount = ErrorCount + 1;
+            console.log("ErrorCount: ", ErrorCount);
             restartTrial();
 
           }
@@ -393,8 +396,43 @@ var keyListener = function(event) {
   event.preventDefault();
 
   if(ctx.state == state.INSTRUCTIONS && event.code == "Enter") {
-    d3.select("#instructions").remove();
-    displayShapes();
+    if (ErrorCount > 0) {
+      d3.select("#instructions").remove();
+
+      ctx.state = state.SHAPES;
+
+      var visualVariable = ctx.trials[ctx.cpt]["VV"];
+      var oc = ctx.trials[ctx.cpt]["OC"];
+      if(oc === "Low") {
+        objectCount = 9;
+      } else if(oc === "Medium") {
+        objectCount = 25;
+      } else {
+        objectCount = 49;
+      }
+      console.log("display shapes for condition "+oc+","+visualVariable);
+
+      var svgElement = d3.select("svg");
+      var group = svgElement.append("g")
+      .attr("id", "shapes")
+      .attr("transform", "translate(100,100)");
+
+      // compute coordinates for laying out objects as a grid
+      var gridCoords = gridCoordinates(objectCount, 60);
+      // display all objects by adding actual SVG shapes
+      for (var i = 0; i < objectCount; i++) {
+          group.append("circle")
+          .attr("cx", gridCoords[i].x)
+          .attr("cy", gridCoords[i].y)
+          .attr("r", 25)
+          .attr("fill", previousObjectsAppearance[i].color)
+          .attr("stroke", previousObjectsAppearance[i].addition)
+          .attr("stroke-width", "4");
+      }
+    } else {
+      d3.select("#instructions").remove();
+      displayShapes();
+    }
     trailStartingTime = Date.now(); //trial starts once the enter key is pressed
 
   }
