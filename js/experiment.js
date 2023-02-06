@@ -105,8 +105,15 @@ var startExperiment = function(event) {
 
 }
 
+var ErrorCount;
 var nextTrial = function() {
   ctx.cpt++;
+  ErrorCount = 0; //reset the error count for next trial
+  displayInstructions();
+}
+
+//restart the trial if the participant clicks wrong
+var restartTrial = function() {
   displayInstructions();
 }
 
@@ -326,6 +333,8 @@ var displayShapes = function() {
 
 }
 
+var trailStartingTime;
+var visualSearchTime;
 var displayPlaceholders = function() {
   ctx.state = state.PLACEHOLDERS;
 
@@ -359,7 +368,21 @@ var displayPlaceholders = function() {
         function() {
           // TODO
           d3.select("#placeholders").remove();
-          nextTrial();
+          //test if the target is clicked. If so, start next trial; if not, repeat the trial in the same condition
+          if (i == ctx.targetIndex) {
+            //push the data of the just finished trial to the array (visualSearchTime, errorCount)
+            visualSearchTime = Date.now() - trailStartingTime;
+            console.log("visualSearchTime: ", visualSearchTime);
+            console.log("ErrorCount: ", ErrorCount);
+            nextTrial();
+          } else {
+            //errorCount++, restartTrial
+            ErrorCount = ErrorCount + 1;
+            restartTrial();
+
+          }
+          
+          
         }
       );
 
@@ -372,6 +395,8 @@ var keyListener = function(event) {
   if(ctx.state == state.INSTRUCTIONS && event.code == "Enter") {
     d3.select("#instructions").remove();
     displayShapes();
+    trailStartingTime = Date.now(); //trial starts once the enter key is pressed
+
   }
   if(ctx.state == state.SHAPES && event.code == "Space") {
     d3.select("#shapes").remove();
